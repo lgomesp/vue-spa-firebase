@@ -30,22 +30,8 @@
 </template>
 
 <script>
-import db from "../db.js";
-
 export default {
   name: "Home",
-  data: function() {
-    return {
-      user: null
-    };
-  },
-  mounted() {
-    db.collection("users")
-      .doc("fFtkMh8DnlpkwcNg25yb")
-      .get()
-      .then(snapshot => {
-        this.user = snapshot.data().name;
-      });
-  }
+  props: ["user"]
 };
 </script>
