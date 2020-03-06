@@ -7,6 +7,7 @@
 
 <script>
 import Navigation from "@/components/Navigation";
+import Firebase from "firebase";
 import db from "./db.js";
 
 export default {
@@ -17,12 +18,11 @@ export default {
     };
   },
   mounted() {
-    db.collection("users")
-      .doc("fFtkMh8DnlpkwcNg25yb")
-      .get()
-      .then(snapshot => {
-        this.user = snapshot.data().name;
-      });
+    Firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        this.user = user.email;
+      }
+    });
   },
   components: {
     Navigation
