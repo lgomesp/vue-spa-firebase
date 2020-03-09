@@ -9,18 +9,26 @@
         <div class="card">
           <div class="card-body px-3 py-2 d-flex align-items-center justify-content-center">
             <div class="btn-group pr-2" v-if="user !== null && user.uid == userID">
-              <button class="btn btn-sm bnt-outline-secondary" title="Give user a Star">
+              <button
+                class="btn btn-sm btn-outline-secondary"
+                title="Give user a Star"
+                :class="[
+                  item.star ? 'text-danger' : '',
+                  'btn-outline-secondary'
+                ]"
+                @click="toggleStar(item.id)"
+              >
                 <font-awesome-icon icon="star"></font-awesome-icon>
               </button>
               <a
-                class="btn btn-sm bnt-outline-secondary"
+                class="btn btn-sm btn-outline-secondary"
                 title="Send user an email"
                 :href="'mailto:' + item.email"
               >
                 <font-awesome-icon icon="envelope"></font-awesome-icon>
               </a>
               <button
-                class="btn btn-sm bnt-outline-secondary"
+                class="btn btn-sm btn-outline-secondary"
                 title="Delete Attendee"
                 @click="deleteAttendee(item.id)"
               >
@@ -60,7 +68,8 @@ export default {
           snapData.push({
             id: doc.id,
             email: doc.data().email,
-            displayName: doc.data().displayName
+            displayName: doc.data().displayName,
+            star: doc.data().star
           });
         });
         this.attendees = snapData;
@@ -80,6 +89,30 @@ export default {
           .collection("attendees")
           .doc(attendeeID)
           .delete();
+      }
+    },
+    toggleStar: function(attendeeID) {
+      if (this.user && this.user.uid == this.userID) {
+        const ref = db
+          .collection("users")
+          .doc(this.user.uid)
+          .collection("meetings")
+          .doc(this.meetingID)
+          .collection("attendees")
+          .doc(attendeeID);
+
+        ref.get().then(doc => {
+          const star = doc.data().star;
+          if (star) {
+            ref.update({
+              star: !star
+            });
+          } else {
+            ref.update({
+              star: true
+            });
+          }
+        });
       }
     }
   }
